@@ -1,12 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 
+# Global headers for HTTP requests
+headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
+            }
+
 def fetch_html(url):
     """Fetch HTML content from a given URL."""
     try:
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-            }
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()  # Raise an error for bad responses
         return response.text
@@ -46,3 +48,25 @@ def scrape_website(url, max_length=10000):
     except ValueError:
         return "Error: Unable to retrieve content from the URL."
         
+def extract_links(url):
+    """Extract all hyperlinks from a given URL."""
+    html_content = fetch_html(url)
+    if not html_content:
+        return []
+    soup = BeautifulSoup(html_content, 'html.parser')
+    links = []
+    for a_tag in soup.find_all('a', href=True):
+        if a_tag['href'].startswith('http') or a_tag['href'].startswith('https'):
+            links.append(a_tag['href'])
+    return links
+
+def get_page_title(url):
+    """Extract the title of the webpage."""
+    html_content = fetch_html(url)
+    if not html_content:
+        return "No Title Found"
+    soup = BeautifulSoup(html_content, 'html.parser')
+    title_tag = soup.find('title')
+    if title_tag:
+        return title_tag.string.strip()
+    return "No Title Found"

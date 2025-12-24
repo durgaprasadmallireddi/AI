@@ -6,13 +6,19 @@ This project is built as a **Hands-on exercise** while learning Large Language M
 
 ---
 
-## What this project does
+## What option 1 does
 - Accepts a public webpage URL
 - Extracts text content from the webpage
 - Removes non-text elements (scripts, images, videos, etc.)
 - Groups content using webpage headings
 - Sends the cleaned content to an LLM for summarization
 
+## What option 2 does
+- Accepts a public webpage url
+- Extracts all relevant links from webpage
+- Generate a brochure in Markdown format.
+- Creates a file with name "page_title".md
+- Saves the brochure markdown file.
 ---
 
 ## Tech Stack
@@ -50,6 +56,8 @@ GROQ_API_KEY=your_groq_api_key
 python main.py
 ```
 Provide a public webpage URL when prompted.
+Select option 1 to summarize a webpage.
+Select option 2 to Generate a brochure.
 
 ## Notes
 - Designed for static public webpages (wikipedia)
