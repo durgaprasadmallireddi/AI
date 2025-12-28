@@ -27,6 +27,7 @@ This project is built as a **Hands-on exercise** while learning Large Language M
 - BeautifulSoup
 - OpenAI Python SDK (used with OpenAI-compatible APIs)
 - LLaMA model via Groq
+- Gradio (For UI)
 
 ---
 
@@ -55,7 +56,7 @@ GROQ_API_KEY=your_groq_api_key
 #Usage
 python main.py
 ```
-Provide a public webpage URL when prompted.
+A webpage will be opened on your local browser. (Have Fun!!)
 Select option 1 to summarize a webpage.
 Select option 2 to Generate a brochure.
 

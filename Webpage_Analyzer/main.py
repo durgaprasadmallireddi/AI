@@ -1,6 +1,7 @@
 from openai import OpenAI
 from web_scraper import scrape_website, extract_links, get_page_title
 from dotenv import load_dotenv
+import gradio as gr
 import json
 import os
 
@@ -12,15 +13,26 @@ model = "meta-llama/llama-4-scout-17b-16e-instruct"
 
 # Initialize OpenAI client with Groq API settings
 client = OpenAI(api_key=groq_key, base_url=groq_base_url)
+        
+def analyze_text_with_groq(url):
+    text_content = scrape_website(url)
+    print("option selected:", option)
 
-def analyze_text_with_groq(text, model):
-    response = client.responses.create(
-        model=model,
-        instructions="Analyze the following text and provide a concise summary.",
-        input=text
-    )
-    return response.output_text
-
+    if "Error" not in text_content:
+        print("Analyzing text with Groq API...")
+        response = client.responses.create(
+            model=model,
+            instructions="Analyze the following text and provide a concise summary.",
+            input=text_content,
+            stream=True
+            )
+        analysis_result = ""
+        for chunk in response:
+            if chunk.type == 'response.output_text.delta':
+                analysis_result += chunk.delta
+            yield analysis_result
+    else:
+        return "Error during scraping: Please check the URL and try again."
 def get_relevant_links(url):
     """Get relevant links using AI from the webpage."""
     links = extract_links(url)
@@ -65,33 +77,28 @@ def generate_brochure(url):
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
-        ]
+        ],
+        stream=True
     )
-    brochure_content = response.choices[0].message.content
-    return brochure_content
+    analysis_result = ""
+    for chunk in response:
+        analysis_result += chunk.choices[0].delta.content or ""
+        yield analysis_result
+    
+
+def analyze_webpage(url,option):
+    print("option selected in main fn:", option)
+    if option == '1':
+        yield from analyze_text_with_groq(url)
+    elif option == '2':
+        yield from generate_brochure(url)
+    
 
 if __name__ == "__main__":
-    url = input("Enter the URL of the webpage to analyze or generate brochure: ")
-    option = input("Choose an option - (1) Analyze Webpage, (2) Generate Brochure: ")
-    if option == '1':
-        print("Scraping the website...")
-        text_content = scrape_website(url)
-
-        if "Error" not in text_content:
-            print("Analyzing text with Groq API...")
-            analysis_result = analyze_text_with_groq(text_content, model)
-            print("Analysis Result:")
-            print(analysis_result)
-        else:
-            print("Error during scraping: Please check the URL and try again.")
-
-    elif option == '2':
-        brochure_content = generate_brochure(url)
-        print("Generated Brochure Content.")
-        page_title = get_page_title(url)
-        filename = f"{page_title.replace(' ', '_')}_Brochure.md"
-        # Save brochure to a markdown file
-        with open(filename, 'w', encoding='utf-8') as f:
-            f.write(brochure_content)
-    else:
-        print("Invalid option selected.")
+    url = gr.Textbox(label="Enter Webpage URL", info="https://example.com")
+    option = gr.Dropdown(choices=['1', '2'], label="Select Option", value='1',
+                         info="1: Analyze Webpage, 2: Generate Brochure")
+    gr.Interface(fn=analyze_webpage, 
+                 inputs=[url, option],
+                 outputs=[gr.Markdown(label="Analysis Result", info="The analysis or brochure will be displayed here.")],
+                 title="Webpage Analyzer with Groq API").launch()
