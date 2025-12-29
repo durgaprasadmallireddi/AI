@@ -47,5 +47,5 @@ def handle_tool_calls(message):
     return "Error: Unknown tool called."
 
 if __name__ == "__main__":
-    gr.ChatInterface(fn=chat, title="IRCTC Booking Agent", 
-                     description="An AI agent that helps you book train tickets on IRCTC.").launch()
+    gr.ChatInterface(fn=chat, title="IRCTC Agent chatbot", 
+                     description="An AI agent that helps you get information about trains, schedules, and availability.").launch()

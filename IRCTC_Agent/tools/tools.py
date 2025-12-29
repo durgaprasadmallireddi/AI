@@ -3,10 +3,10 @@ import os
 import requests
 
 load_dotenv()
-irctc_api_key = os.getenv("IRCTC_API_KEY")
-irctc_api_host = os.getenv("IRCTC_API_HOST")
+irctc_api_key = os.getenv("IRCTC_API_KEY_2")
+irctc_api_host = os.getenv("IRCTC_API_HOST_2")
 
-url = "https://irctc1.p.rapidapi.com/api/"
+url = "https://irctc-api2.p.rapidapi.com/"
 
 def api_call(endpoint: str, params: dict):
     """Generic API call function."""
@@ -39,13 +39,18 @@ def call_tool(tool_name: str, params: dict):
             train_number=params.get("train_number")
         )
     elif tool_name == "get_seat_availability":
-        return get_seat_availability(
-            train_number=params.get("train_number"),
-            date=params.get("date"),
-            class_code=params.get("class_code"),
+        # return get_seat_availability(
+        #     train_number=params.get("train_number"),
+        #     date=params.get("date"),
+        #     class_code=params.get("class_code"),
+        #     source=params.get("source"),
+        #     destination=params.get("destination"),
+        #     quota=params.get("quota")
+        # )
+        return get_trains_between_stations(
             source=params.get("source"),
             destination=params.get("destination"),
-            quota=params.get("quota")
+            date=params.get("date")
         )
     elif tool_name == "get_fare":
         return get_fare(
@@ -66,16 +71,16 @@ def call_tool(tool_name: str, params: dict):
             station_code=params.get("station_code")
         )
     elif tool_name == "get_station_code":
-        return get_station_code(
-            station_name=params.get("station_name")
+        return get_station_name_from_code(
+            station_code=params.get("station_code")
         )
     else:
         return "Error: Tool not found."
 
 def get_trains_between_stations(source: str, destination: str, date: str = None):
     """Fetch trains between two stations."""
-    querystring = {"fromStationCode": source, "toStationCode": destination, "dateOfJourney": date}
-    response = api_call("v3/trainBetweenStations", querystring)
+    querystring = {"source": source, "destination": destination, "date": date}
+    response = api_call("trainAvailability", querystring)
     return response
 
 def get_train_schedule(train_number: str):
@@ -115,8 +120,8 @@ def get_pnr_status(pnr_number: str):
 
 def get_live_train_status(train_number: str):
     """Get the live status of a train using its train number."""
-    querystring = {"trainNo": train_number, "startDay":"0"}
-    response = api_call("v1/liveTrainStatus", querystring)
+    querystring = {"trainNumber": train_number, "startDay":"0"}
+    response = api_call("liveTrain", querystring)
     return response
 
 def get_trains_by_station(station_code: str):
@@ -125,8 +130,8 @@ def get_trains_by_station(station_code: str):
     response = api_call("v3/getTrainsByStation", querystring)
     return response
 
-def get_station_code(station_name: str):
-    """Get the station code for a given station name."""
-    querystring = {"query": station_name}
-    response = api_call("v1/searchStation", querystring)
+def get_station_name_from_code(station_code: str):
+    """Get the station name from a given station code."""
+    querystring = {"code": station_code}
+    response = api_call("stationSearch", querystring)
     return response

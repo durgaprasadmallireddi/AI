@@ -15,7 +15,7 @@ Tools = [
                 },
                 "date": {
                     "type": "string",
-                    "description": "The date of journey in YYYY-MM-DD format."
+                    "description": "The date of journey in DD-MM-YYYY format."
                 }
             },
             "required": ["source", "destination", "date"]
@@ -41,18 +41,18 @@ Tools = [
         "parameters": {
             "type": "object",
             "properties": {
-                "train_number": {
-                    "type": "string",
-                    "description": "The train number."
-                },
+                # "train_number": {
+                #     "type": "string",
+                #     "description": "The train number."
+                # },
                 "date": {
                     "type": "string",
-                    "description": "The date of journey in YYYY-MM-DD format."
+                    "description": "The date of journey in DD-MM-YYYY format."
                 },
-                "class_code": {
-                    "type": "string",
-                    "description": "The class code (e.g., SL, 3A, 2A)."
-                },
+                # "class_code": {
+                #     "type": "string",
+                #     "description": "The class code (e.g., SL, 3A, 2A)."
+                # },
                 "source": {
                     "type": "string",
                     "description": "The station code of the source station."
@@ -60,13 +60,13 @@ Tools = [
                 "destination": {
                     "type": "string",
                     "description": "The station code of the destination station."
-                },
-                "quota": {
-                    "type": "string",
-                    "description": "The quota code (e.g., GN for General, TL for Tatkal)."
-                }
+                 },
+                # "quota": {
+                #     "type": "string",
+                #     "description": "The quota code (e.g., GN for General, TL for Tatkal)."
+                # }
             },
-            "required": ["train_number", "date", "class_code", "source", "destination", "quota"]
+            "required": ["date", "source", "destination"]
         }
     },
     {
@@ -134,17 +134,17 @@ Tools = [
         }
     },
     {
-        "name": "get_station_code",
-        "description": "Get the station code for a given station name.",
+        "name": "get_station_name_from_code",
+        "description": "Get the station name from a given station code.",
         "parameters": {
             "type": "object",
             "properties": {
-                "station_name": {
+                "station_code": {
                     "type": "string",
-                    "description": "The name of the station."
+                    "description": "The station code."
                 }
             },
-            "required": ["station_name"]
+            "required": ["station_code"]
         }
     }
 
